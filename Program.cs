@@ -13,10 +13,24 @@ namespace Scacchi
         {
             Console.OutputEncoding = System.Text.Encoding.Unicode;
             Console.SetWindowSize(100, 30);
-            SimpleXUnitRunner.SimpleXUnit.RunTests();
+          //  SimpleXUnitRunner.SimpleXUnit.RunTests();
+            Scacchiera scacchiera = new Scacchiera();
+            Orologio orologio = new Orologio();
+            Tavolo tavolo = new Tavolo(scacchiera, orologio);
+            tavolo.RiceviGiocatori("Lorenzo", "Aldo");
+            tavolo.AvviaPartita();
+            Console.WriteLine($"{tavolo.Giocatori[Colore.Bianco].Nome} (Bianco) VS {tavolo.Giocatori[Colore.Nero].Nome} (Nero)");
+            while (true)
+            {
+                Console.WriteLine($"E' il turno di :{tavolo.Giocatori[orologio.TurnoAttuale].Nome}");
+                Console.WriteLine("Inserisci una mossa valida(nella forma : Colonna-Traversa di partenza e Colonna-Traversa di arrivo)");
+                tavolo.InserisciMossa(Console.ReadLine());
+
+            }
+
             Console.ReadKey();
         }
-/* */
+        /* */
 
         /*var pedone1 = new Pedone(Colore.Bianco);
             var pedone2 = new Pedone(Colore.Bianco);
@@ -43,11 +57,11 @@ namespace Scacchi
             }*/
 
 
-            /*IScacchiera scacchiera = new Scacchiera();
-            scacchiera
-            .Case
-            .ConPezzi(Colore.Bianco)
-            .DiTipo<Pedone>();*/
+        /*IScacchiera scacchiera = new Scacchiera();
+        scacchiera
+        .Case
+        .ConPezzi(Colore.Bianco)
+        .DiTipo<Pedone>();*/
         /*
         private static void NotificaSconfitta(object sender, Colore colore)
         {

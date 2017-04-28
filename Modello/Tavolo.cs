@@ -22,7 +22,6 @@ namespace Scacchi.Modello
         {
             if (Giocatori == null)
                 throw new InvalidOperationException("Attenzione, prima devi indicare i nomi dei giocatori!");
-
             Orologio.Accendi();
             Orologio.Avvia();
         }
@@ -42,6 +41,8 @@ namespace Scacchi.Modello
             Scacchiera[partenza.Colonna, partenza.Traversa].PezzoPresente = null;
             Scacchiera[arrivo.Colonna, arrivo.Traversa].PezzoPresente = pezzo;
             controllaReMancante();
+            //ora ho controllato davvero tutto, posso cambiare il turno dell'orologio!
+            Orologio.FineTurno();
         }
 
         private void controllaReMancante()
@@ -53,12 +54,12 @@ namespace Scacchi.Modello
                 ICasa casaConRe = caseConRe.FirstOrDefault();
                 if (casaConRe.PezzoPresente.Colore == Colore.Nero)
                 {
-                    Console.WriteLine($"Il vincitore è il giocatore: {this.Giocatori[Colore.Nero] }");
+                    Console.WriteLine($"Il vincitore è il giocatore: {this.Giocatori[Colore.Nero].Nome }");
                     Environment.Exit(0);
                 }
                 else if (casaConRe.PezzoPresente.Colore == Colore.Bianco)
                 {
-                    Console.WriteLine($"Il vincitore è il giocatore: {this.Giocatori[Colore.Bianco] }");
+                    Console.WriteLine($"Il vincitore è il giocatore: {this.Giocatori[Colore.Bianco].Nome }");
                     Environment.Exit(0);
                 }
             }
@@ -79,12 +80,12 @@ namespace Scacchi.Modello
         {
             if (Orologio.TempoResiduoBianco <= TimeSpan.FromMinutes(0) && Orologio.TurnoAttuale == Colore.Bianco)
             {
-                Console.WriteLine($"Il vincitore è il giocatore: {this.Giocatori[Colore.Nero] }");
+                Console.WriteLine($"Il vincitore è il giocatore: {this.Giocatori[Colore.Nero].Nome }");
                 Environment.Exit(0);
             }
             else if ((Orologio.TempoResiduoNero <= TimeSpan.FromMinutes(0) && Orologio.TurnoAttuale == Colore.Nero))
             {
-                Console.WriteLine($"Il vincitore è il giocatore: {this.Giocatori[Colore.Bianco] }");
+                Console.WriteLine($"Il vincitore è il giocatore: {this.Giocatori[Colore.Bianco].Nome }");
                 Environment.Exit(0);
 
             }
