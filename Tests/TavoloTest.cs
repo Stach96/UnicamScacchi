@@ -1,6 +1,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using Scacchi.Modello;
+using Scacchi.Modello.Pezzi;
 using Xunit;
 
 namespace Scacchi.Tests
@@ -49,14 +50,37 @@ namespace Scacchi.Tests
         [Fact]
         public void IlTavoloDeveEssereInGradoDiInterpretareLeCoordinateDigitateDallUtente()
         {
-        //Given
-        Tavolo tavolo = new Tavolo(null, null);
-        //When
-        Coordinata coordinata = tavolo.InterpretaCoordinataCasa("A4");
-        
-        //Then
-        Assert.Equal(Traversa.Quarta, coordinata.Traversa);
-        Assert.Equal(Colonna.A, coordinata.Colonna);
+            //Given
+            Tavolo tavolo = new Tavolo(null, null);
+            //When
+            Coordinata coordinata = tavolo.InterpretaCoordinataCasa("A4");
+
+            //Then
+            Assert.Equal(Traversa.Quarta, coordinata.Traversa);
+            Assert.Equal(Colonna.A, coordinata.Colonna);
+        }
+
+        [Fact]
+        public void UnaMossaValidaDeveEssereAccettata()
+        {
+            //Given
+            IScacchiera scacchiera = new Scacchiera();
+
+            IOrologio orologio = new Orologio();
+
+            ITavolo tavolo = new Tavolo(scacchiera, orologio);
+
+            tavolo.RiceviGiocatori("Lorenzo", "Negro");
+            tavolo.AvviaPartita();
+            //prendo il pezzo nella posizione di partenza
+            IPezzo pezzo = scacchiera[Colonna.A, Traversa.Seconda].PezzoPresente;
+            //When
+            tavolo.InserisciMossa("A2 A3");
+            //Then
+            //controllo che la posizione a3 contenga un pezzo
+            Assert.NotNull(scacchiera[Colonna.A, Traversa.Terza]);
+            Assert.Equal(pezzo.Colore, scacchiera[Colonna.A, Traversa.Terza].PezzoPresente.Colore);
+            Assert.Equal(pezzo.GetType(), scacchiera[Colonna.A, Traversa.Terza].PezzoPresente.GetType());
         }
     }
 }

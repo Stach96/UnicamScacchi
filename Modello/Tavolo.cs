@@ -1,6 +1,9 @@
 using System;
 using System.Collections.Generic;
+using System.Linq;
 using Scacchi.Modello;
+using Scacchi.Modello.Pezzi;
+
 namespace Scacchi.Modello
 {
     public class Tavolo : ITavolo
@@ -28,8 +31,48 @@ namespace Scacchi.Modello
         {
             controllaSeTempoScaduto();
             Coordinata partenza = InterpretaCoordinataCasa(mossa.Substring(0, 2));
+            controllaCasaPartenza(partenza);
             Coordinata arrivo = InterpretaCoordinataCasa(mossa.Substring(3, 2));
-            ///
+            controllaMovimentoPezzo(partenza, arrivo);
+            //la mossa può essere accettata
+            //salvo il pezzo dentro la casa di partenza
+            IPezzo pezzo = Scacchiera[partenza.Colonna, partenza.Traversa].PezzoPresente;
+            //sposto il pezzo in una casa, se vi era un pezzo dell'avversario ovviamente
+            //verrà mangiato e sparirà dalla scacchiera!
+            Scacchiera[partenza.Colonna, partenza.Traversa].PezzoPresente = null;
+            Scacchiera[arrivo.Colonna, arrivo.Traversa].PezzoPresente = pezzo;
+            controllaReMancante();
+        }
+
+        private void controllaReMancante()
+        {
+            IEnumerable<ICasa> caseConRe = Scacchiera.Case.Where(casa => casa.PezzoPresente?.GetType() == typeof(Re));
+            if (caseConRe.Count() < 2 && caseConRe.Count() > 0)
+            {
+                //c'è un vincitore
+                ICasa casaConRe = caseConRe.FirstOrDefault();
+                if (casaConRe.PezzoPresente.Colore == Colore.Nero)
+                {
+                    Console.WriteLine($"Il vincitore è il giocatore: {this.Giocatori[Colore.Nero] }");
+                    Environment.Exit(0);
+                }
+                else if (casaConRe.PezzoPresente.Colore == Colore.Bianco)
+                {
+                    Console.WriteLine($"Il vincitore è il giocatore: {this.Giocatori[Colore.Bianco] }");
+                    Environment.Exit(0);
+                }
+            }
+        }
+
+        private void controllaMovimentoPezzo(Coordinata partenza, Coordinata arrivo)
+        {
+            var pezzoDaMuovere = Scacchiera[partenza.Colonna, partenza.Traversa].PezzoPresente;
+            bool esito = pezzoDaMuovere.PuòMuovere(partenza.Colonna, partenza.Traversa,
+             arrivo.Colonna, arrivo.Traversa, Scacchiera.Case);
+            if (!esito)
+            {
+                throw new ArgumentException("Mossa non valida!");
+            }
         }
 
         private void controllaSeTempoScaduto()
@@ -37,12 +80,24 @@ namespace Scacchi.Modello
             if (Orologio.TempoResiduoBianco <= TimeSpan.FromMinutes(0) && Orologio.TurnoAttuale == Colore.Bianco)
             {
                 Console.WriteLine($"Il vincitore è il giocatore: {this.Giocatori[Colore.Nero] }");
+                Environment.Exit(0);
             }
             else if ((Orologio.TempoResiduoNero <= TimeSpan.FromMinutes(0) && Orologio.TurnoAttuale == Colore.Nero))
             {
                 Console.WriteLine($"Il vincitore è il giocatore: {this.Giocatori[Colore.Bianco] }");
+                Environment.Exit(0);
 
             }
+        }
+
+        private void controllaCasaPartenza(Coordinata partenza)
+        {
+            ICasa casaPartenza = Scacchiera[partenza.Colonna, partenza.Traversa];
+            if (casaPartenza.PezzoPresente.Colore != Orologio.TurnoAttuale)
+            {
+                Console.WriteLine("Non puoi muovere un pezzo non tuo!");
+            }
+
         }
 
         internal Coordinata InterpretaCoordinataCasa(string casa)

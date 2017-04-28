@@ -16,6 +16,7 @@ namespace Scacchi
             SimpleXUnitRunner.SimpleXUnit.RunTests();
             Console.ReadKey();
         }
+/* */
 
         /*var pedone1 = new Pedone(Colore.Bianco);
             var pedone2 = new Pedone(Colore.Bianco);
